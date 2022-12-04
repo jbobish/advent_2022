@@ -74,8 +74,45 @@ class day2:
 
         return total_score
 
+class day3:
+    def __init__(self):
+        with open("day3.txt") as input:
+            self.lines = input.readlines()
 
-        return 0
+    def item_priority(self, item: chr):
+        return ord(item) - 96 if ord(item) >= 97 else ord(item) - 64 + 26
+
+    def part1(self):
+        total_pri = 0
+        for rucksack in self.lines:
+            compartment_size = int(len(rucksack) / 2)
+            compartment1 = rucksack[0:compartment_size]
+            compartment2 = rucksack[compartment_size:]
+            items = dict.fromkeys(compartment1)
+            for item in compartment2:
+                if item in items:
+                    total_pri += self.item_priority(item)
+                    break
+
+        return total_pri
+
+    def part2(self):
+        total_pri = 0
+        sack1 = {}
+        sack2 = {}
+        for rucksack in self.lines:
+            if not sack1:
+                sack1 = dict.fromkeys(rucksack)
+            elif not sack2:
+                sack2 = dict.fromkeys(rucksack)
+            else:
+                for item in rucksack:
+                    if item in sack1 and item in sack2:
+                        total_pri += self.item_priority(item)
+                        sack1 = {}
+                        sack2 = {}
+                        break
+        return total_pri
 
     def solution(self):
         part1_solution = self.part1()
@@ -83,6 +120,6 @@ class day2:
         part2_solution = self.part2()
         print(part2_solution)
 
-today = day2()
+today = day3()
 today.solution()
 
