@@ -120,6 +120,39 @@ class day3:
         part2_solution = self.part2()
         print(part2_solution)
 
-today = day3()
+class day4:
+    def __init__(self):
+        with open("day3.txt") as input:
+            self.lines = input.readlines()
+
+    def part1(self):
+        full_overlaps = 0
+        for pair in self.lines:
+            first_elf = [int(x) for x in pair.split(",")[0].split("-")]
+            second_elf = [int(x) for x in pair.split(",")[1].split("-")]
+            if first_elf[0] >= second_elf[0] and first_elf[1] <= second_elf[1]:
+                full_overlaps += 1
+            elif second_elf[0] >= first_elf[0] and second_elf[1] <= first_elf[1]:
+                full_overlaps += 1
+        return full_overlaps
+
+    def part2(self):
+        full_overlaps = 0
+        for pair in self.lines:
+            first_elf = [int(x) for x in pair.split(",")[0].split("-")]
+            second_elf = [int(x) for x in pair.split(",")[1].split("-")]
+            if first_elf[0] >= second_elf[0] and first_elf[0] <= second_elf[1]:
+                full_overlaps += 1
+            elif second_elf[0] >= first_elf[0] and second_elf[0] <= first_elf[1]:
+                full_overlaps += 1
+        return full_overlaps
+
+    def solution(self):
+        part1_solution = self.part1()
+        print(part1_solution)
+        part2_solution = self.part2()
+        print(part2_solution)
+
+today = day4()
 today.solution()
 
