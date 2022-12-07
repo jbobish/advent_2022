@@ -1,9 +1,24 @@
-
-
-class day1:
-    def __init__(self):
-        with open("day1.txt") as input:
+class puzzle():
+    def __init__(self, day):
+        with open(f"day{day}.txt") as input:
             self.lines = input.readlines()
+
+    def part1():
+        pass
+
+    def part2():
+        pass
+
+    def solution(self):
+        part1_solution = self.part1()
+        print(part1_solution)
+        part2_solution = self.part2()
+        print(part2_solution)
+
+
+class day1(puzzle):
+    def __init__(self):
+        super().__init__(1)
 
     def part1(self):
         self.max_calories = [0]
@@ -20,16 +35,10 @@ class day1:
     def part2(self):
         return self.max_calories[0] + self.max_calories[1] + self.max_calories[2]
 
-    def solution(self):
-        part1_solution = self.part1()
-        print(part1_solution)
-        part2_solution = self.part2()
-        print(part2_solution)
 
-class day2:
+class day2(puzzle):
     def __init__(self):
-        with open("day2.txt") as input:
-            self.lines = input.readlines()
+        super().__init__(2)
 
     move_map = { "X": "A", "Y": "B", "Z": "C" }
     score_map = { "A": 1, "B": 2, "C": 3 }
@@ -74,10 +83,9 @@ class day2:
 
         return total_score
 
-class day3:
+class day3(puzzle):
     def __init__(self):
-        with open("day3.txt") as input:
-            self.lines = input.readlines()
+        super().__init__(3)
 
     def item_priority(self, item: chr):
         return ord(item) - 96 if ord(item) >= 97 else ord(item) - 64 + 26
@@ -114,17 +122,9 @@ class day3:
                         break
         return total_pri
 
-    def solution(self):
-        part1_solution = self.part1()
-        print(part1_solution)
-        part2_solution = self.part2()
-        print(part2_solution)
-
-class day4:
+class day4(puzzle):
     def __init__(self):
-        with open("day3.txt") as input:
-            self.lines = input.readlines()
-
+        super().__init__(4)
     def part1(self):
         full_overlaps = 0
         for pair in self.lines:
@@ -147,12 +147,83 @@ class day4:
                 full_overlaps += 1
         return full_overlaps
 
-    def solution(self):
-        part1_solution = self.part1()
-        print(part1_solution)
-        part2_solution = self.part2()
-        print(part2_solution)
+class day5(puzzle):
+    def __init__(self):
+        super().__init__(5)
 
-today = day4()
+    def part1(self):
+        determine_format = True
+        stacks = []
+        for stackdata in self.lines:
+            if "[" in stackdata:
+                if determine_format:
+                    determine_format = False
+                    line_length = len(stackdata)
+                    stack_count = int(line_length / 4)
+                    stacks = [ [] for _ in range(stack_count) ]
+                crates = [ stackdata[i:i+4].strip() for i in range(0, len(stackdata), 4)]
+                for cratenum in range(len(crates)):
+                    if crates[cratenum]:
+                        stacks[cratenum].insert(0, crates[cratenum].strip("[,]"))
+
+            if "move" in stackdata:
+                moves = stackdata.split(" ")
+                for i in range(int(moves[1])):
+                    stacks[int(moves[5])-1].append(stacks[int(moves[3])-1].pop())
+
+        return ''.join([stack.pop() for stack in stacks])
+
+    def part2(self):
+        determine_format = True
+        stacks = []
+        for stackdata in self.lines:
+            if "[" in stackdata:
+                if determine_format:
+                    determine_format = False
+                    line_length = len(stackdata)
+                    stack_count = int(line_length / 4)
+                    stacks = [ [] for _ in range(stack_count) ]
+                crates = [ stackdata[i:i+4].strip() for i in range(0, len(stackdata), 4)]
+                for cratenum in range(len(crates)):
+                    if crates[cratenum]:
+                        stacks[cratenum].insert(0, crates[cratenum].strip("[,]"))
+
+            if "move" in stackdata:
+                moves = stackdata.split(" ")
+                source_stack = stacks[int(moves[3])-1]
+                dest_stack = stacks[int(moves[5])-1]
+                crate_count = int(moves[1])
+                crate_start = len(source_stack)-crate_count
+                for i in range(crate_count):
+                    print(len(source_stack), crate_count)
+                    dest_stack.append(source_stack.pop(crate_start))
+
+        return ''.join([stack.pop() for stack in stacks])
+
+
+class day6(puzzle):
+    def __init__(self):
+        super().__init__(6)
+
+    def part1(self):
+        marker = ["-" for i in range(14)]
+        position = 0
+        for letter in self.lines[0]:
+            position += 1
+            for i in range(14):
+                if marker[i] == letter:
+                    marker[i] = "-"
+            marker.pop(0)
+            marker.append(letter)
+            if "-" not in marker:
+                print(marker)
+                break
+
+        return position
+
+    def part2(self):
+        return 0
+
+today = day6()
 today.solution()
 
