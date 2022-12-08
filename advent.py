@@ -12,6 +12,7 @@ class puzzle():
     def solution(self):
         part1_solution = self.part1()
         print(part1_solution)
+        print("\n")
         part2_solution = self.part2()
         print(part2_solution)
 
@@ -206,6 +207,21 @@ class day6(puzzle):
         super().__init__(6)
 
     def part1(self):
+        marker = ["-" for i in range(4)]
+        position = 0
+        for letter in self.lines[0]:
+            position += 1
+            for i in range(4):
+                if marker[i] == letter:
+                    marker[i] = "-"
+            marker.pop(0)
+            marker.append(letter)
+            if "-" not in marker:
+                break
+
+        return position
+
+    def part2(self):
         marker = ["-" for i in range(14)]
         position = 0
         for letter in self.lines[0]:
@@ -216,14 +232,92 @@ class day6(puzzle):
             marker.pop(0)
             marker.append(letter)
             if "-" not in marker:
-                print(marker)
                 break
 
         return position
 
-    def part2(self):
-        return 0
+class day7(puzzle):
+    def __init__(self):
+        super().__init__(7)
 
-today = day6()
+    class folder():
+        def __init__(self, name, size_limit, parent={}):
+            self.name = name
+            self.files = {}
+            self.sub_folders = {}
+            self.parent = parent
+            self.size_limit = size_limit
+
+        def add_file(self, filename, filesize):
+            self.files[filename] = filesize
+
+        def add_sub_folder(self, folder_name):
+            if folder_name not in self.sub_folders:
+                self.sub_folders[folder_name] = day7.folder(folder_name, self.size_limit, self)
+
+        def folder_size(self):
+            return sum(int(self.files[f]) for f in self.files) + sum(self.sub_folders[s].folder_size() for s in self.sub_folders)
+
+        # def small_folders(self):
+        #     current_files_size = sum(int(self.files[f]) for f in self.files)
+        #     sub_folders_size = sum(self.sub_folders[s].folder_size() for s in self.sub_folders)
+        #     smalls = []
+
+        #     current_folder_size = current_files_size + sub_folders_size
+        #     if current_folder_size < self.size_limit:
+        #         smalls.append(current_folder_size)
+
+        #     for folder in self.sub_folders:
+        #         sub_folder_size = self.sub_folders[folder].folder_size()
+        #         if sub_folder_size < self.size_limit:
+        #             smalls.append(self.sub_folders[folder].folder_size())
+        #     return smalls
+
+        def print(self):
+            if self.size_limit == 100000 and self.folder_size() < self.size_limit:
+                print(f"{self.folder_size()}")
+            elif self.size_limit != 100000 and self.folder_size() >= self.size_limit:
+                print(f"{self.folder_size()}")
+            for folder in self.sub_folders:
+                self.sub_folders[folder].print()
+
+    def get_file_structure(self, size_limit):
+        root = day7.folder("/", size_limit)
+        cwd = root
+        for line in self.lines:
+            if "$ cd" in line:
+                folder_name = line.split()[2]
+                if folder_name == "/":
+                    cwd = root
+                elif folder_name == "..":
+                    cwd = cwd.parent
+                else:
+                    cwd = cwd.sub_folders[folder_name]
+            elif "$" not in line:
+                if "dir" in line:
+                    folder_name = line.split()[1]
+                    cwd.add_sub_folder(folder_name)
+                else:
+                    filesize = line.split()[0]
+                    filename = line.split()[1]
+                    cwd.add_file(filename, filesize)
+
+        return root
+
+    def part1(self):
+        structure = self.get_file_structure(100000)
+
+        structure.print()
+
+        return "Add up the values above"
+
+    def part2(self):
+        structure = self.get_file_structure(6090135)
+        needed_space = structure.folder_size() - 40000000
+        structure.print()
+
+        return f"Smallest folder size at least {needed_space}"
+
+today = day7()
 today.solution()
 
